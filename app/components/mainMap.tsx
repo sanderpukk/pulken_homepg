@@ -11,6 +11,8 @@ const MapComponent = () => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [climateData, setClimateData] = useState<ClimateData | null>(null); // Use the ClimateData interface to type the state
+    const [markerLocation, setMarkerLocation] = useState<maplibregl.Marker | null>(null);
+
 
     useEffect(() => {
 
@@ -19,7 +21,7 @@ const MapComponent = () => {
         mapRef.current = new maplibregl.Map({
             container: mapContainerRef.current,
             style: 'https://api.maptiler.com/maps/2a7d0dee-a49a-4d2e-8b03-bbbde9b50ea6/style.json?key=' + process.env.MAPTILER_API_KEY,
-            center: [24.768372, 59.036041],
+            center: [24.420966, 59.045220],
             zoom: 8,
         });
 
@@ -31,6 +33,12 @@ const MapComponent = () => {
             const { lngLat } = event;
             console.log('Clicked at:', lngLat);
             // Add your custom logic for handling the click event here
+            console.log()
+            // setMarkerLocation(new maplibregl.Marker().setLngLat(lngLat));
+            const markerElement = document.querySelector(".maplibregl-marker");
+            markerElement?.remove();
+            
+            new maplibregl.Marker().setLngLat(lngLat).addTo(map);
 
             getClimateDataByCoordinates(lngLat.lat, lngLat.lng)
                 .then((data) => {
@@ -62,21 +70,26 @@ const MapComponent = () => {
 
     return (
         <>
-            <div className="left-0 bg-nav-red w-[600px] h-[65vh] rounded-r-[30px] !absolute top-[15vh] z-10">
-                <div className='w-[100%] h-[100%] pl-5 pt-5 pr-5'>
+            <div className="left-0 bg-nav-red/90 w-[650px] h-[50vh] rounded-r-[30px] !absolute top-[15vh] z-10">
+                <div className='w-[100%] h-[100%] pl-2 pt-5 pr-2 '>
                     <div className="overflow-x-auto overflow-hidden ">
-                        {climateData ? (
-                            <><div className="p-4 opacity-80">
+                        {climateData && climateData.forecast.tabular.time ? (
+                            <><div className="p-4 opacity-80 shadow-2xl	">
                                 <h1 className="mb-4"><strong>{climateData.location}</strong></h1>
                                 <ul className="list-disc ml-6 opacity-80">
                                     <li>
                                         <strong>Temperatuur:</strong> {climateData.forecast.tabular.time[0].temperature['@attributes'].value} °C
                                     </li>
-                                    {Object.entries(climateData.forecast.tabular.time[0]).filter(([key]) => filteredKeys.includes(key)).map(([key, value]) => (
-                                        <li key={key}>
-                                            <strong>{eestiNimed[key]}:</strong> {getCorrectValueForKey(key, value)}
-                                        </li>
-                                    ))}
+                                    {climateData.forecast.tabular.time[0] ? 
+                                        Object.entries(climateData.forecast.tabular.time[0]).filter(([key]) => filteredKeys.includes(key)).map(([key, value]) => (
+                                            <li key={key}>
+                                                <strong>{eestiNimed[key]}:</strong> {getCorrectValueForKey(key, value)}
+                                            </li>
+                                        ))
+                                    
+                                        :
+                                        <></>
+                                    }
                                 </ul>
                             </div>
                                 <br />
