@@ -6,6 +6,9 @@ import { getClimateDataByCoordinates } from '@/app/services/ilmateenistus'; // U
 import { ClimateData } from '@/app/interfaces/iClimateData'
 import ForecastTable from './forecastTable';
 import { eestiNimed, getCorrectValueForKey } from '../utils/nameMapping';
+import pulkenLogo from '@/app/pulken_logo-svg-white.svg'
+import Image from 'next/image'
+import { Typography } from "@material-tailwind/react";
 
 const MapComponent = () => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -37,7 +40,7 @@ const MapComponent = () => {
             // setMarkerLocation(new maplibregl.Marker().setLngLat(lngLat));
             const markerElement = document.querySelector(".maplibregl-marker");
             markerElement?.remove();
-            
+
             new maplibregl.Marker().setLngLat(lngLat).addTo(map);
 
             getClimateDataByCoordinates(lngLat.lat, lngLat.lng)
@@ -70,23 +73,24 @@ const MapComponent = () => {
 
     return (
         <>
-            <div className="left-0 bg-nav-red/90 w-[650px] h-[50vh] rounded-r-[30px] !absolute top-[15vh] z-10">
+            <div className="left-0 bg-nav-red/90 w-[650px] h-[50vh] min-h-[500px] rounded-r-[30px] !absolute top-[15vh] z-10">
+
                 <div className='w-[100%] h-[100%] pl-2 pt-5 pr-2 '>
                     <div className="overflow-x-auto overflow-hidden ">
                         {climateData && climateData.forecast.tabular.time ? (
                             <><div className="p-4 opacity-80 shadow-2xl	">
                                 <h1 className="mb-4"><strong>{climateData.location}</strong></h1>
-                                <ul className="list-disc ml-6 opacity-80">
+                                <ul className="opacity-90">
                                     <li>
                                         <strong>Temperatuur:</strong> {climateData.forecast.tabular.time[0].temperature['@attributes'].value} °C
                                     </li>
-                                    {climateData.forecast.tabular.time[0] ? 
+                                    {climateData.forecast.tabular.time[0] ?
                                         Object.entries(climateData.forecast.tabular.time[0]).filter(([key]) => filteredKeys.includes(key)).map(([key, value]) => (
                                             <li key={key}>
                                                 <strong>{eestiNimed[key]}:</strong> {getCorrectValueForKey(key, value)}
                                             </li>
                                         ))
-                                    
+
                                         :
                                         <></>
                                     }
@@ -97,10 +101,22 @@ const MapComponent = () => {
                         ) : (
                             <p>Kliki asukohta</p>
                         )}
+
                     </div>
-
-
+                    <div className="flex items-center absolute bottom-0">
+                        <Image
+                            src={pulkenLogo}
+                            alt="Logo"
+                            height={30}
+                            width={30}
+                            className="mr-4 py-1.5 font-medium"
+                        />
+                        <Typography variant="h4" className="font-Maven-Pro  py-1.5 opacity-80">
+                            Pulken
+                        </Typography>
+                    </div>
                 </div>
+
             </div>
             <div ref={mapContainerRef} className="h-[100vh] w-[100%] !absolute top-0 !cursor-auto"></div>
         </>

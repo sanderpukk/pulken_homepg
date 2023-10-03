@@ -10,11 +10,9 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-background-globe bg-cover bg-center">
-      <NavbarDefault></NavbarDefault>
       <div className="hidden md:block">
         <MapComponent />
       </div>
-      <Footer></Footer>
     </main>
   )
 }

@@ -9,7 +9,7 @@ export async function getClimateDataByCoordinates(
 ): Promise<ClimateData> {
   try {
     const response = await fetch(
-      `https://www.ilmateenistus.ee/wp-content/themes/ilm2020/meteogram.php/?coordinates=${latitude};${longitude}`
+      `https://ilmateenistusproxy.azurewebsites.net/ilmateenistus?coordinates=${latitude};${longitude}`
     );
 
     if (!response.ok) {
